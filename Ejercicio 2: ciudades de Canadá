@@ -1,0 +1,31 @@
+%Ciudades
+ciu(vancouver).
+ciu(edmonton).
+ciu(saskatoon).
+ciu(winnipeg).
+ciu(calgary).
+ciu(regina).
+
+%Conexiones
+con(vancouver, [destino(calgary, 13), destino(edmonton, 16)]).
+con(edmonton, [destino(saskatoon, 12)]).
+con(saskatoon, [destino(winnipeg, 20), destino(calgary, 9)]).
+con(calgary, [destino(regina, 14), destino(edmonton, 4)]).
+con(regina, [destino(winnipeg, 4), destino(saskatoon, 7)]).
+con(winnipeg, []).
+
+%Regla nodos
+arista(X) :- con(X, [_|_]).
+pertenece(X, [X|_]).
+pertenece(X, [_|T]) :- pertenece(X, T).
+no_pertenece(_, []).
+no_pertenece(X, [H|T]) :- X \== H, no_pertenece(X, T).
+conectado(X, Y, Costo) :- con(X, Lista), pertenece(destino(Y, Costo), Lista).
+
+%Regla para costo de un nodo de X a un Z a un Y
+camino(X, Z, Costo) :- camino(X, Z, [X], Costo).
+camino(X, Z, _, Costo) :- conectado(X, Z, Costo).
+camino(X, Z, Visitadas, Total) :- conectado(X, Y, Costo1), no_pertenece(Y, Visitadas), camino(Y, Z, [Y|Visitadas], Costo2), Total is Costo1 + Costo2.
+
+%Regla para costo de X a Z pasando por Y
+pasando_por(X, Y, Z, Total) :- camino(X, Y, Costo1), camino(Y, Z, Costo2), Total is Costo1 + Costo2.
