@@ -1,0 +1,69 @@
+
+% Géneros
+masculino(abraham).
+masculino(clancy).
+masculino(herbert).
+masculino(homero).
+masculino(bart).
+
+femenino(mona).
+femenino(jacqueline).
+femenino(marge).
+femenino(patty).
+femenino(selma).
+femenino(lisa).
+femenino(maggie).
+femenino(ling).
+
+%Padres directos: progenitor(Padre/Madre, Hijo/Hija)
+padre_de(abraham,[herbert, homero]).
+padre_de(clancy,[marge, patty, selma]).
+padre_de(homero,[bart, lisa, maggie]).
+
+madre_de(mona,[homero]).
+madre_de(jacqueline,[marge, patty, selma]).
+madre_de(marge,[bart, lisa, maggie]).
+madre_de(selma,[ling]).         
+
+progenitor(X, Y) :- padre_de(X, Lista), member(Y, Lista).
+progenitor(X, Y) :- madre_de(X, Lista), member(Y, Lista).
+hijos_de(Padre, Hije) :- padre_de(Padre, Hijos), member(Hije, Hijos).
+hijos_de(Madre, Hije) :- madre_de(Madre, Hijos), member(Hije, Hijos).
+
+%Relaciones
+padre(X, Y) :- progenitor(X, Y), masculino(X).
+madre(X, Y) :- progenitor(X, Y), femenino(X).
+
+
+
+
+
+% 2.Relaciones de más de 1 generación
+
+
+%Abuelo/Abuela
+abuelo(X, Y) :- progenitor(X, Z), progenitor(Z, Y), masculino(X).
+abuela(X, Y) :- progenitor(X, Z), progenitor(Z, Y), femenino(X).
+
+% Nieto/Nieta
+nieto(X, Y) :- abuelo(Y, X), masculino(X).
+nieto(X, Y) :- abuela(Y, X), masculino(X).
+nieta(X, Y) :- abuelo(Y, X), femenino(X).
+nieta(X, Y) :- abuela(Y, X), femenino(X).
+
+% Hermanos/Hermanas
+hermano(X, Y) :- progenitor(P, X), progenitor(P, Y), masculino(X), X \== Y.
+hermana(X, Y) :- progenitor(P, X), progenitor(P, Y), femenino(X), X \== Y.
+
+% Tíos/Tías
+tio(X, Y) :- hermano(X, P), progenitor(P, Y).
+tia(X, Y) :- hermana(X, P), progenitor(P, Y).
+
+% Primos/Primas
+primo(X, Y) :- progenitor(P1, X), progenitor(P2, Y), hermano(P1, P2), masculino(X).
+prima(X, Y) :- progenitor(P1, X), progenitor(P2, Y), (hermano(P1, P2) ; hermana(P1, P2)), femenino(X).
+
+% Ancestros de forma recursiva
+ancestro(X, Y) :- progenitor(X, Y).
+ancestro(X, Y) :- progenitor(X, Z), ancestro(Z, Y).
+
