@@ -1,19 +1,21 @@
-
 % Géneros
-masculino(abraham).
-masculino(clancy).
-masculino(herbert).
-masculino(homero).
-masculino(bart).
+persona(abraham, masculino).
+persona(clancy, masculino).
+persona(herbert, masculino).
+persona(homero, masculino).
+persona(bart, masculino).
 
-femenino(mona).
-femenino(jacqueline).
-femenino(marge).
-femenino(patty).
-femenino(selma).
-femenino(lisa).
-femenino(maggie).
-femenino(ling).
+persona(mona, femenino).
+persona(jacqueline, femenino).
+persona(marge, femenino).
+persona(patty, femenino).
+persona(selma, femenino).
+persona(lisa, femenino).
+persona(maggie, femenino).
+persona(ling, femenino).
+
+masculino(X) :- persona(X, masculino).
+femenino(X) :- persona(X, femenino).
 
 %Padres directos: progenitor(Padre/Madre, Hijo/Hija)
 padre_de(abraham,[herbert, homero]).
@@ -23,23 +25,21 @@ padre_de(homero,[bart, lisa, maggie]).
 madre_de(mona,[homero]).
 madre_de(jacqueline,[marge, patty, selma]).
 madre_de(marge,[bart, lisa, maggie]).
-madre_de(selma,[ling]).         
+madre_de(selma,[ling]).
 
-progenitor(X, Y) :- padre_de(X, Lista), member(Y, Lista).
-progenitor(X, Y) :- madre_de(X, Lista), member(Y, Lista).
-hijos_de(Padre, Hije) :- padre_de(Padre, Hijos), member(Hije, Hijos).
-hijos_de(Madre, Hije) :- madre_de(Madre, Hijos), member(Hije, Hijos).
+pertenece(X, [X|_]).
+pertenece(X, [_|T]) :- pertenece(X, T).
+
+progenitor(X, Y) :- padre_de(X, Lista), pertenece(Y, Lista).
+progenitor(X, Y) :- madre_de(X, Lista), pertenece(Y, Lista).
+hijos_de(Padre, Hije) :- padre_de(Padre, Hijos), pertenece(Hije, Hijos).
+hijos_de(Madre, Hije) :- madre_de(Madre, Hijos), pertenece(Hije, Hijos).
 
 %Relaciones
 padre(X, Y) :- progenitor(X, Y), masculino(X).
 madre(X, Y) :- progenitor(X, Y), femenino(X).
 
-
-
-
-
 % 2.Relaciones de más de 1 generación
-
 
 %Abuelo/Abuela
 abuelo(X, Y) :- progenitor(X, Z), progenitor(Z, Y), masculino(X).
@@ -60,10 +60,9 @@ tio(X, Y) :- hermano(X, P), progenitor(P, Y).
 tia(X, Y) :- hermana(X, P), progenitor(P, Y).
 
 % Primos/Primas
-primo(X, Y) :- progenitor(P1, X), progenitor(P2, Y), hermano(P1, P2), masculino(X).
+primo(X, Y) :- progenitor(P1, X), progenitor(P2, Y), (hermano(P1, P2) ; hermana(P1, P2)), masculino(X).
 prima(X, Y) :- progenitor(P1, X), progenitor(P2, Y), (hermano(P1, P2) ; hermana(P1, P2)), femenino(X).
 
 % Ancestros de forma recursiva
 ancestro(X, Y) :- progenitor(X, Y).
 ancestro(X, Y) :- progenitor(X, Z), ancestro(Z, Y).
-
