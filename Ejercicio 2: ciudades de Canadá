@@ -29,3 +29,4 @@ camino(X, Z, Visitadas, Total) :- conectado(X, Y, Costo1), no_pertenece(Y, Visit
 
 %Regla para costo de X a Z pasando por Y
 pasando_por(X, Y, Z, Total) :- camino(X, Y, Costo1), camino(Y, Z, Costo2), Total is Costo1 + Costo2.
+
